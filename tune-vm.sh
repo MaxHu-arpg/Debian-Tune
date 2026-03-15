@@ -29,7 +29,7 @@ sed -i 's/#DefaultLimitNPROC=/DefaultLimitNPROC=1048576/g' /etc/systemd/system.c
 # 2. 内核参数调优 (Network & Virtual Memory)
 # ----------------------------------------------------------------
 echo ">>> 正在写入内核参数 (sysctl)..."
-cat << EOF > /etc/sysctl.d/99-mytune.conf
+cat << EOF > /etc/sysctl.d/98-mytune.conf
 # 提高系统全局文件句柄限制 (200万)
 fs.file-max = 2097152
 fs.nr_open = 2097152
@@ -52,12 +52,15 @@ net.ipv4.tcp_max_syn_backlog = 8192
 
 net.ipv4.tcp_slow_start_after_idle = 0
 net.ipv4.tcp_synack_retries = 4
+# 表示系统同时保持TIME_WAIT的最大数量  
 net.ipv4.tcp_max_tw_buckets = 16384
 net.ipv4.tcp_syncookies = 1
 net.ipv4.tcp_max_orphans = 32768
 net.ipv4.tcp_timestamps = 1
 net.ipv4.tcp_sack = 1
 #net.ipv4.tcp_mtu_probing = 1
+# 不建议开启tcp fast open功能 https://vpsgongyi.com/p/2237/
+#net.ipv4.tcp_fastopen = 3
 
 net.ipv4.conf.all.rp_filter = 0
 net.ipv4.conf.default.rp_filter = 0
@@ -65,11 +68,12 @@ net.ipv4.conf.default.arp_announce = 2
 net.ipv4.conf.lo.arp_announce = 2
 net.ipv4.conf.all.arp_announce = 2
 
+net.ipv4.neigh.default.gc_stale_time = 120
 
 # 满足nf_conntrack_max=4*nf_conntrack_buckets
 # 比如，对64G内存的机器，推荐配置nf_conntrack_max=4194304，nf_conntrack_buckets=1048576
-net.netfilter.nf_conntrack_max=1048576
-net.netfilter.nf_conntrack_buckets=262144
+net.netfilter.nf_conntrack_max=524288
+net.netfilter.nf_conntrack_buckets=131072
 
 # 内存与交换优化
 vm.swappiness = 10
@@ -81,7 +85,7 @@ vm.min_free_kbytes = 40960
 
 EOF
 
-sysctl -p /etc/sysctl.d/99-mytune.conf
+sysctl -p /etc/sysctl.d/98-mytune.conf
 
 # # ----------------------------------------------------------------
 # # 3. 磁盘 I/O 优化
