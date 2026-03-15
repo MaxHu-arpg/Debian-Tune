@@ -73,15 +73,15 @@ net.netfilter.nf_conntrack_buckets=262144
 
 # 内存与交换优化
 vm.swappiness = 10
-vm.dirty_ratio = 60
-vm.dirty_background_ratio = 30
+vm.dirty_ratio = 20
+vm.dirty_background_ratio = 10
 vm.vfs_cache_pressure = 50
 #vm.overcommit_memory = 1
 vm.min_free_kbytes = 40960
 
 EOF
 
-sysctl -p
+sysctl -p /etc/sysctl.d/99-mytune.conf
 
 # # ----------------------------------------------------------------
 # # 3. 磁盘 I/O 优化
