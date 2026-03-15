@@ -22,8 +22,10 @@ root hard nofile 1048576
 EOF
 
 # 修改 Systemd 限制
-sed -i 's/#DefaultLimitNOFILE=/DefaultLimitNOFILE=1048576/g' /etc/systemd/system.conf
-sed -i 's/#DefaultLimitNPROC=/DefaultLimitNPROC=1048576/g' /etc/systemd/system.conf
+# 解释：^#? 匹配开头可能有也可能没有的 # 号
+# .*$ 匹配该行剩下的所有字符并替换掉
+sed -i 's/^#\?DefaultLimitNOFILE=.*$/DefaultLimitNOFILE=1048576/g' /etc/systemd/system.conf
+sed -i 's/^#\?DefaultLimitNPROC=.*$/DefaultLimitNPROC=1048576/g' /etc/systemd/system.conf
 
 # ----------------------------------------------------------------
 # 2. 内核参数调优 (Network & Virtual Memory)
